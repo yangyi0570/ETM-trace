@@ -1,0 +1,1 @@
+cmd_/home/shunya/etm_juno/demo.ko := /home/shunya/toolchain/gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-ld -EL -r  -maarch64linux -T ./scripts/module-common.lds --build-id  -o /home/shunya/etm_juno/demo.ko /home/shunya/etm_juno/demo.o /home/shunya/etm_juno/demo.mod.o ;  true
