@@ -39,3 +39,10 @@ hikey 970上的使用过程，和juno r2并不完全一致。在juno r2上，运
 ### 分析
 7. sudo dd if=/dev/cs_device of=output_file 将数据从虚拟的字符设备中读取
 8. ptm2human -e -i output_file > decoded_file
+
+
+# 通过/sys接口使能的方式
+root@junor2:/sys/bus/coresight/devices# echo "1">20010000.etf/enable_sink 
+root@junor2:/sys/bus/coresight/devices# echo "1">22140000.etm/enable_source 
+root@junor2:/sys/bus/coresight/devices# echo "0">22140000.etm/enable_source 
+root@junor2:/sys/bus/coresight/devices# echo "0">20010000.etf/enable_sink
