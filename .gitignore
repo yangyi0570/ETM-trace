@@ -1,5 +1,6 @@
 # compiled file
 .tmp_versions/
+demo.ko
 
 # unrelated file 
 ./mount_cs_device/test_write.c

@@ -36,15 +36,12 @@ void enable_trace(void* debug)
     struct etf_config etf_con = {0x100};
     struct funnel_config main_funnel_con = {0, 0xFAC688};
     struct funnel_config cluster0_funnel_con = {1, 0xFAC688}; 
-    //struct funnel_config cssys2_con = {0, 0xFAC688};
 
-    //is_Q_element_implement(param->etm0_register);
     tmc_enable_etf_sink(param->etf0_register, etf_con);
-    funnel_enable(param->main_funnel_register, main_funnel_con);   // todo:struct funnel_config con需要配置
+    funnel_enable(param->main_funnel_register, main_funnel_con);
     funnel_enable(param->cluster0_funnel_register, cluster0_funnel_con);
     
     set_pmu_export(param->pmu1_register);
-    //调用不同的etm使能函数来确定是否实现数据跟踪（但实际上hikey970上没有数据跟踪）
     etm_enable_trace_program_flow(param->etm1_register);
 }
 

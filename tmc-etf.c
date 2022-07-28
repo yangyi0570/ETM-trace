@@ -89,3 +89,9 @@ void tmc_dump_etf_sink(void *base)
 
 	printk(KERN_INFO "etr dump finish");
 }
+
+void tmc_info_etf(void* base){
+	// etf RAM depth
+	uint32_t tmc_rsz = ioread32(base + TMC_RSZ);
+	printk(KERN_INFO "TMC_RSZ: %x\n", tmc_rsz);
+}
