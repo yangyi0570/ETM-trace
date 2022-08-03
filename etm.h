@@ -205,19 +205,6 @@ enum etm_addr_ctxtype {
 };
 
 
-//void etm4_config_trace_mode(struct etmv4_config *config);
-
-
-// void unlock_OS(void *base);
-// void lock_OS(void *base);
-// void unlock_software(void *base);
-// void lock_software(void *base);
-// void disable_unit(void *base);
-// void enable_unit(void *base);
-// void init(void *base);
-// void finish(void *base);
-// void etm_status_show(void *base);
-
 void etm_enable_trace_program_flow(void *base);
 void etm_enable_trace_instruction_and_data(void* base);
 void etm_disable(void *base);

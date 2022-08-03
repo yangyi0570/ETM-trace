@@ -35,7 +35,6 @@ static int __init trace_init(void)
     cparam->pmu1_register = ioremap(PMU1_BASE_ADD, PMU_REGISTERS_SIZE);
 
     // 尝试将trace配置在指定核上执行
-    // printk(KERN_INFO "start smp\n");
     // smp_call_function_single(debugger, trace_program_flow, (void*)cparam, 1);
     enable_trace(cparam);
 

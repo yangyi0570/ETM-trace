@@ -8,8 +8,16 @@
 2. 实现了读出跟踪数据：挂载虚拟字符设备，由本模块从etf中读取数据并写入到虚拟字符设备中，再从用户空间读字符设备获取跟踪数据。
 3. PMU可以输出到跟踪流中。并简单验证了其正确性。
 ## 实现细节
+### PMU事件跟踪
+首先需要明确，PMU事件是作为外部事件导入到ETM中。在其内部通过数据总线连接两者。
+所以工作分为两部分：
+1. 对于PMU而言，它需要通过置位PMU的寄存器PMCR_EL0的PMCR_X位，来使能PMU的输出。
+2. 配置ETM将PMU作为外部事件接收。
+    - TRCEVENTCTL0R写入四个外部事件。内部可以填入事件号。PMU的事件号需查对于具体某个处理器型号的技术手册。比如对于A72而言，其手册中，PMU event bus指明了各事件在导入到trace时对应的事件号。例如，cycle的事件号为16。但实际写入到事件字段时，需要+4。以为前四个外部事件事件号是CTI的。
+    - TRCEVENTCTL1R通过置位使得对应的外部事件能够输出跟踪元素。
+    - TRCRSCTLRn寄存器用于选择资源。这里资源的定义是广泛的，可以是地址过滤器也可以是计数器等。这里选择外部事件。因为在TRCEVENTCTL0R中已经写入了想要跟踪的PMU事件的外部事件号。由TRCRSCTLRn选中外部事件号，作为被跟踪的资源。
 ### ETB
-对于juno r2而言，通过tmc_info_etf可以查到其size为64KB。
+对于juno r2而言，通过tmc_info_etf函数可以查到其size为64KB。
 ## TODO
 - 挂载虚拟字符设备的模块，其开辟的内存空间过小，考虑修改为vmalloc，而不是现有的kmalloc。
 - 使用自动化脚本使能coresight组件，避免硬编码
@@ -38,3 +46,6 @@ root@junor2:/sys/bus/coresight/devices# echo "1">20010000.etf/enable_sink
 root@junor2:/sys/bus/coresight/devices# echo "1">22140000.etm/enable_source 
 root@junor2:/sys/bus/coresight/devices# echo "0">22140000.etm/enable_source 
 root@junor2:/sys/bus/coresight/devices# echo "0">20010000.etf/enable_sink
+
+## 参考
+

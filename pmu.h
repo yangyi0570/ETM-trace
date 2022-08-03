@@ -38,7 +38,6 @@
 #define PMEVTYPER_MT                (1 << 25)
 #define PMEVTYPER_SH                (1 << 24)
 
-void configure_pmu(void *base);
 void set_pmu_export(void *base);
 
 #endif
