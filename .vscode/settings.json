@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "io.h": "c",
+        "kernel.h": "c",
+        "sysinfo.h": "c",
+        "const.h": "c",
+        "pmu.h": "c",
+        "connect.h": "c",
+        "tmc-etf.h": "c"
+    }
+}
