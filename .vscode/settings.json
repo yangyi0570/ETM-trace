@@ -6,6 +6,7 @@
         "const.h": "c",
         "pmu.h": "c",
         "connect.h": "c",
-        "tmc-etf.h": "c"
+        "tmc-etf.h": "c",
+        "funnel.h": "c"
     }
 }

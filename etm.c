@@ -83,14 +83,12 @@ void etm_enable_trace_program_flow(void *base)
     
     //etm_status_show(base);
     iowrite32(0x1, base + TRCCONFIGR);
-    iowrite32(0x0, base + TRCEVENTCTL0R);
-    iowrite32(0x0, base + TRCEVENTCTL1R);
     iowrite32(0x0, base + TRCSTALLCTLR);
     iowrite32(0xC, base + TRCSYNCPR);
     iowrite32(0x6, base + TRCTRACEIDR); //trace id
     iowrite32(0x0, base + TRCTSCTLR);
-    iowrite32(0x201, base + TRCVICTLR);
-    iowrite32(0x1, base + TRCVIIECTLR);
+    iowrite32(0xEF0201, base + TRCVICTLR); // only trace non-secure EL0
+    iowrite32(0x0, base + TRCVIIECTLR);    // no address filtering
     iowrite32(0x0, base + TRCVISSCTLR);
     iowrite32(0x0, base + TRCBBCTLR);
 
@@ -134,6 +132,22 @@ void etm_enable_trace_instruction_and_data(void* base)
     iowrite32(0x0, base + TRCVISSCTLR);
 
     enable_unit(base);
+    lock_OS(base);
+    CS_LOCK(base);
+}
+
+/**
+ * @brief disable etm.
+ * 
+ * @param base 
+ */
+void etm_disable(void *base)
+{
+    CS_UNLOCK(base);
+    unlock_OS(base);
+
+    disable_unit(base);
+
     lock_OS(base);
     CS_LOCK(base);
 }

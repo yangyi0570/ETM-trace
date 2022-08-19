@@ -208,6 +208,7 @@ enum etm_addr_ctxtype {
 void etm_enable_trace_program_flow(void *base);
 void etm_enable_trace_instruction_and_data(void* base);
 void etm_disable(void *base);
+void etm_status_show(void *base);
 
 
 #endif
