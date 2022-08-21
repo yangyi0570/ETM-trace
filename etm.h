@@ -142,34 +142,19 @@
 #define ETM_TRACEID_MASK		0x3f
 
 /* ETMv4 programming modes */
-#define ETM_MODE_EXCLUDE		(1 << 0)
-#define ETM_MODE_LOAD			(1 << 1)
-#define ETM_MODE_STORE			(1 << 2)
-#define ETM_MODE_LOAD_STORE		(1 << 3)
-#define ETM_MODE_BB			(1 << 4)
-#define ETMv4_MODE_CYCACC		(1 << 5)
-#define ETMv4_MODE_CTXID		(1 << 6)
+#define ETM_MODE_DEFAULT		(1 << 0)
+#define ETM_MODE_INSTP0(val)	BMVAL(val, 1, 2)
+#define ETM_MODE_BB				(1 << 3)
+#define ETM_MODE_CYCLECOUNT		(1 << 4)
+#define ETM_MODE_CTXID			(1 << 6)
 #define ETM_MODE_VMID			(1 << 7)
 #define ETM_MODE_COND(val)		BMVAL(val, 8, 10)
-#define ETMv4_MODE_TIMESTAMP		(1 << 11)
-#define ETM_MODE_RETURNSTACK		(1 << 12)
+#define ETM_MODE_TIMESTAMP		(1 << 11)
+#define ETM_MODE_RETURNSTACK	(1 << 12)
 #define ETM_MODE_QELEM(val)		BMVAL(val, 13, 14)
-#define ETM_MODE_DATA_TRACE_ADDR	(1 << 15)
-#define ETM_MODE_DATA_TRACE_VAL		(1 << 16)
-#define ETM_MODE_ISTALL			(1 << 17)
-#define ETM_MODE_DSTALL			(1 << 18)
-#define ETM_MODE_ATB_TRIGGER		(1 << 19)
-#define ETM_MODE_LPOVERRIDE		(1 << 20)
-#define ETM_MODE_ISTALL_EN		(1 << 21)
-#define ETM_MODE_DSTALL_EN		(1 << 22)
-#define ETM_MODE_INSTPRIO		(1 << 23)
-#define ETM_MODE_NOOVERFLOW		(1 << 24)
-#define ETM_MODE_TRACE_RESET		(1 << 25)
-#define ETM_MODE_TRACE_ERR		(1 << 26)
-#define ETM_MODE_VIEWINST_STARTSTOP	(1 << 27)
-#define ETMv4_MODE_ALL			(GENMASK(27, 0) | \
-					 ETM_MODE_EXCL_KERN | \
-					 ETM_MODE_EXCL_USER)
+#define ETM_MODE_VMIDOPT		(1 << 15)
+#define ETM_MODE_DATA_TRACE_ADDR	(1 << 16)
+#define ETM_MODE_DATA_TRACE_VAL		(1 << 17)
 
 #define TRCSTATR_IDLE_BIT		0
 #define ETM_DEFAULT_ADDR_COMP		0
@@ -177,16 +162,21 @@
 /* PowerDown Control Register bits */
 #define TRCPDCR_PU			(1 << 3)
 
-/* secure state access levels */
-#define ETM_EXLEVEL_S_APP		(1 << 8)
-#define ETM_EXLEVEL_S_OS		(1 << 9)
-#define ETM_EXLEVEL_S_NA		(1 << 10)
-#define ETM_EXLEVEL_S_HYP		(1 << 11)
-/* non-secure state access levels */
-#define ETM_EXLEVEL_NS_APP		(1 << 12)
-#define ETM_EXLEVEL_NS_OS		(1 << 13)
-#define ETM_EXLEVEL_NS_HYP		(1 << 14)
-#define ETM_EXLEVEL_NS_NA		(1 << 15)
+
+/* ViewInst Main Control */
+#define ETM_VI_DEFAULT			0x201	// trace all exception level, not trace other thing.
+/* Excluded tracing level */
+/* note: bit=0 -> enable trace; bit=1 -> disable trace */
+#define ETM_EXLEVEL_S_EL0		(1 << 16)
+#define ETM_EXLEVEL_S_EL1		(1 << 17)
+#define ETM_EXLEVEL_S_EL2		(1 << 18)
+#define ETM_EXLEVEL_S_EL3		(1 << 19)
+#define ETM_EXLEVEL_NS_EL0		(1 << 20)
+#define ETM_EXLEVEL_NS_EL1		(1 << 21)
+#define ETM_EXLEVEL_NS_EL2		(1 << 22)
+// non-secure EL3 is not implemented.
+/*  */
+
 
 /* Address comparator access types */
 enum etm_addr_acctype {

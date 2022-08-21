@@ -82,12 +82,15 @@ void etm_enable_trace_program_flow(void *base)
     disable_unit(base);
     
     //etm_status_show(base);
-    iowrite32(0x1, base + TRCCONFIGR);
+    iowrite32(ETM_MODE_DEFAULT, base + TRCCONFIGR);
     iowrite32(0x0, base + TRCSTALLCTLR);
     iowrite32(0xC, base + TRCSYNCPR);
     iowrite32(0x6, base + TRCTRACEIDR); //trace id
     iowrite32(0x0, base + TRCTSCTLR);
-    iowrite32(0xEF0201, base + TRCVICTLR); // only trace non-secure EL0
+    iowrite32(ETM_VI_DEFAULT | ETM_EXLEVEL_S_EL0 |
+            ETM_EXLEVEL_S_EL1 | ETM_EXLEVEL_S_EL2 |
+            ETM_EXLEVEL_S_EL3 | ETM_EXLEVEL_NS_EL1 |
+            ETM_EXLEVEL_NS_EL2, base + TRCVICTLR); // only trace non-secure EL0
     iowrite32(0x0, base + TRCVIIECTLR);    // no address filtering
     iowrite32(0x0, base + TRCVISSCTLR);
     iowrite32(0x0, base + TRCBBCTLR);
