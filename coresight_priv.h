@@ -6,17 +6,6 @@
 #include <asm/io.h>
 
 
-/*--------------------------- MEMIO INTERFACES ------------------------*/
-
-// 0xed710000 is the base address of the debug registers on Core 7
-#define DEBUG_REGISTER_ADDR             0xed710000
-#define DEBUG_REGISTER_SIZE             0x1000
-
-
-// 0xed720000 is the base address of the cross trigger interface registers on Core 7
-#define CTI_REGISTER_ADDR               0xed720000
-#define CTI_REGISTER_SIZE               0x1000
-
 /*--------------------------- DEBUG REGISTERS ------------------------*/
 
 // Offsets of debug registers
@@ -98,23 +87,23 @@
 
 static inline void CS_LOCK(void __iomem *base)
 {
-	// do {
-	// 	/* Wait for things to settle */
-	// 	mb();	//内存屏障
-	// 	iowrite32(0x0, base + CORESIGHT_LAR);
-	// } while (0);
-	iowrite32(0x0, base + CORESIGHT_LAR);
+	do {
+		/* Wait for things to settle */
+		mb();	//内存屏障
+		iowrite32(0x0, base + CORESIGHT_LAR);
+	} while (0);
+	//iowrite32(0x0, base + CORESIGHT_LAR);
 }
 
 static inline void CS_UNLOCK(void __iomem *base)
 {
-	// do {
-	// 	iowrite32(0xC5ACCE55, base + CORESIGHT_LAR);
-	// 	/* Make sure everyone has seen this */
-	// 	mb();
-	// } while (0);	
+	do {
+		iowrite32(0xC5ACCE55, base + CORESIGHT_LAR);
+		/* Make sure everyone has seen this */
+		mb();
+	} while (0);	
 
-	iowrite32(0xC5ACCE55, base + CORESIGHT_LAR);
+	//iowrite32(0xC5ACCE55, base + CORESIGHT_LAR);
 }
 
 
