@@ -96,7 +96,7 @@ void etm_enable_trace_program_flow(void *base)
     iowrite32(0x0, base + TRCBBCTLR);
 
     //pmu使能相关
-    etm_accept_pmu_events(base);
+    //etm_accept_pmu_events(base);
 
     //在etm单元使能前需要保证pmu已经使能完成
     enable_unit(base);

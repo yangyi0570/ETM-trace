@@ -34,6 +34,9 @@ struct connect_param{
     void __iomem *pmu4_register;
     void __iomem *pmu5_register;
 };
+
+void enable_junor2_trace(void* debug);
+void disable_junor2_trace(void* debug);
 #endif
 
 #ifdef HIKEY970
@@ -62,11 +65,10 @@ struct connect_param{
     void __iomem *pmu6_register;
     void __iomem *pmu7_register;
 };
-#endif
 
-void enable_junor2_trace(void* debug);
-void disable_junor2_trace(void* debug);
 void enable_hikey970_trace(void* debug);
 void disable_hikey970_trace(void* debug);
+#endif
+
 
 #endif
