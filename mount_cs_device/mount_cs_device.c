@@ -123,8 +123,7 @@ static int __init mount_cs_device_init(void)
     if (retval)
         return retval;
 
-    //paddr = kmalloc(device_buffer_size, GFP_KERNEL); // 64KB,kmalloc()最大可申请内存空间
-    paddr = vmalloc()
+    paddr = kmalloc(device_buffer_size, GFP_KERNEL); // 64KB,kmalloc()最大可申请内存空间
     memset(paddr, 0, device_buffer_size);
     write_point = paddr;
     read_point = paddr;

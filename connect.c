@@ -1,5 +1,6 @@
 #include "connect.h"
 
+#ifdef JUNOR2
 void enable_junor2_trace(void* debug)
 {
     struct connect_param *param = (struct connect_param *)debug;
@@ -27,15 +28,17 @@ void disable_junor2_trace(void* debug)
 
     printk(KERN_INFO "disable trace and reset!");
 }
+#endif
 
 
+#ifdef HIKEY970
 void enable_hikey970_trace(void* debug)
 {
     struct connect_param *param = (struct connect_param *)debug;
     /* funnel and tmc configuration */
     struct etr_config etr_con = {0x00001000, 0x10086, 0x100};
-    struct funnel_config funnel1_con = {0, 0xFAC688};
-    struct funnel_config funnel2_con = {0, 0xFAC688};
+    struct funnel_config funnel1_con = {0, 0xFAC688};   // note: be cautious for configuration
+    struct funnel_config funnel2_con = {1, 0xFAC688};
 
     tmc_enable_etr_sink(param->etr0_register, etr_con);
     tmc_enable_etf_link(param->etb2_register);
@@ -59,3 +62,4 @@ void disable_hikey970_trace(void* debug)
 
     printk(KERN_INFO "disable trace and reset!");
 }
+#endif
