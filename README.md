@@ -1,12 +1,15 @@
-# juno r2基于coresight的跟踪系统
+# 基于coresight的跟踪系统
 本项目模块利用coresight中的etm组件对处理器核进行跟踪，在用户空间通过虚拟字符设备将跟踪数据读出。
+
 ## 项目组成
 1. 使能coresight的内核模块。
 2. 挂载虚拟字符设备cs_device的内核模块。（mount_cs_device目录下）
+
 ## 当前进度
 1. 实现coresight组件链的使能。juno r2的组件链为etm->funnel->etf。
 2. 实现了读出跟踪数据：挂载虚拟字符设备，由本模块从etf中读取数据并写入到虚拟字符设备中，再从用户空间读字符设备获取跟踪数据。
 3. PMU可以输出到跟踪流中。并简单验证了其正确性。
+
 ## 实现细节
 ### 跨平台实现
 在etmtrace 0.3后，将hikey970与juno r2的使能模块集成到一起。根据makefile的宏定义来判断编译哪些代码，主要集中在register.h和connect.h文件上。**在trace.c和connect.c中，需要自己硬编码对当前平台需要使能的coresight部件。并且PMU事件跟踪在etm.c中，需要注意对于不同平台它的PMU事件号不同，也需要重新写。**
@@ -33,25 +36,27 @@
 - 能不能对目前可复现的侧信道做一次监测，看看效果。
 - 通过内核模块的使能方式仍然需要考察。其是否高效呢？如果真的在PMI中开关使能模块是否合理呢。（可以通过sys接口来控制
 - 过滤？
+
 ## 问题
 1. 在etmtrace 0.1版本中出现的PMU与执行流跟踪的问题，在etmtrace0.2中解决。
+
 ## 使用方式
-hikey 970上的使用过程，和juno r2并不完全一致。在juno r2上，运行过程只需要将程序绑定至被跟踪核即可，不需要调整优先级。
-### 前提步骤
 1. 安装mount_cs_device模块（在mount_cs_device文件夹中，安装后可以多次使用，不用每次追踪都安装再卸载）
-### 运行
-2. 运行要检测的程序demo_helper
-3. 设置demo_helper的优先级为-20（不需要，因为etm本身可以跟踪到核上所有进程）
-4. 安装demo.ko模块（使能etm对CPU的指令流追踪）
-### 结束
-5. 移除demo.ko模块（关闭etm对CPU的指令流追踪）
-6. 结束demo_helper进程
-### 分析
-7. sudo dd if=/dev/cs_device of=output_file 将数据从虚拟的字符设备中读取
-8. ptm2human -e -i output_file > decoded_file
+    > sudo insmod mount_cs_device.ko
+2. 安装demo.ko模块（使能etm对CPU的指令流追踪）
+    > sudo insmod demo.ko
+3. 移除demo.ko模块（关闭etm对CPU的指令流追踪）
+    > sudo rmmod demo.ko
+4. 将数据从虚拟的字符设备中读取
+        > sudo dd if=/dev/cs_device of=output_file
+5. 使用ptm2human进行解码
+    > ptm2human -e -i output_file > decoded_file
+
+## 注意事项
+1. hikey上使用etm时，4核是不可以的，其他核还没测试，不太清楚原因。7核是没问题的。
 
 ## 通过/sys接口使能的方式
-root@junor2:/sys/bus/coresight/devices# echo "1">20010000.etf/enable_sink 
+> root@junor2:/sys/bus/coresight/devices# echo "1">20010000.etf/enable_sink 
 root@junor2:/sys/bus/coresight/devices# echo "1">22140000.etm/enable_source 
 root@junor2:/sys/bus/coresight/devices# echo "0">22140000.etm/enable_source 
 root@junor2:/sys/bus/coresight/devices# echo "0">20010000.etf/enable_sink

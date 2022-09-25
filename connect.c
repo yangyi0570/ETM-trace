@@ -37,7 +37,7 @@ void enable_hikey970_trace(void* debug)
     struct connect_param *param = (struct connect_param *)debug;
     /* funnel and tmc configuration */
     struct etr_config etr_con = {0x00001000, 0x10086, 0x100};
-    struct funnel_config funnel1_con = {0, 0xFAC688};   // note: be cautious for configuration
+    struct funnel_config funnel1_con = {3, 0xFAC688};   // note: be cautious for configuration
     struct funnel_config funnel2_con = {1, 0xFAC688};
 
     tmc_enable_etr_sink(param->etr0_register, etr_con);
@@ -45,7 +45,7 @@ void enable_hikey970_trace(void* debug)
     funnel_enable(param->funnel2_register, funnel2_con);
     tmc_enable_etf_link(param->etb1_register);
     funnel_enable(param->funnel1_register, funnel1_con);
-    etm_enable_trace_program_flow(param->etm4_register);
+    etm_enable_trace_program_flow(param->etm7_register);
 }
 
 void disable_hikey970_trace(void* debug)
@@ -53,7 +53,7 @@ void disable_hikey970_trace(void* debug)
     struct connect_param *param = (struct connect_param *)debug;
     struct etr_config etr_con = {0x00001000, 0x10086, 0x100};
 
-    etm_disable(param->etm4_register);
+    etm_disable(param->etm7_register);
     funnel_disable(param->funnel1_register);
     tmc_disable_etf_link(param->etb1_register);
     funnel_disable(param->funnel2_register);
