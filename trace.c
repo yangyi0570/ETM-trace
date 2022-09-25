@@ -43,13 +43,13 @@ static int __init trace_init(void)
 #ifdef HIKEY970
     /* map the debug and cross trigger registers into virtual memory space */
     cparam = kmalloc(sizeof(tcparam), GFP_KERNEL);
-    cparam->etm4_register = ioremap(ETM4_BASE_ADD, ETM_REGISTERS_SIZE);
+    cparam->etm7_register = ioremap(ETM7_BASE_ADD, ETM_REGISTERS_SIZE);
     cparam->etb1_register = ioremap(ETB1_BASE_ADD, TMC_REGISTERS_SIZE);
     cparam->etb2_register = ioremap(ETB2_BASE_ADD, TMC_REGISTERS_SIZE);
     cparam->funnel1_register = ioremap(FUNNEL1_BASE_ADD, FUNNEL_REGISTERS_SIZE);
     cparam->funnel2_register = ioremap(FUNNEL2_BASE_ADD, FUNNEL_REGISTERS_SIZE);
     cparam->etr0_register = ioremap(ETR0_BASE_ADD, TMC_REGISTERS_SIZE);
-    cparam->pmu4_register = ioremap(PMU4_BASE_ADD, PMU_REGISTERS_SIZE);
+    cparam->pmu7_register = ioremap(PMU7_BASE_ADD, PMU_REGISTERS_SIZE);
 
     enable_hikey970_trace(cparam);
 #endif
@@ -77,13 +77,13 @@ static void __exit trace_exit(void)
     disable_hikey970_trace(cparam);
 
     /* unmap physical memory */
-    iounmap(cparam->etm4_register);
+    iounmap(cparam->etm7_register);
     iounmap(cparam->etb1_register);
     iounmap(cparam->etb2_register);
     iounmap(cparam->funnel1_register);
     iounmap(cparam->funnel2_register);
     iounmap(cparam->etr0_register);
-    iounmap(cparam->pmu4_register);
+    iounmap(cparam->pmu7_register);
     kfree(cparam);
 #endif
 
