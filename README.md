@@ -48,7 +48,7 @@
 3. 移除demo.ko模块（关闭etm对CPU的指令流追踪）
     > sudo rmmod demo.ko
 4. 将数据从虚拟的字符设备中读取
-        > sudo dd if=/dev/cs_device of=output_file
+    > sudo dd if=/dev/cs_device of=output_file
 5. 使用ptm2human进行解码
     > ptm2human -e -i output_file > decoded_file
 
