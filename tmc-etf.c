@@ -2,7 +2,7 @@
 
 void tmc_enable_etf_sink(void *base, struct etf_config con)
 {
-	printk(KERN_INFO "tmc_enable_etf_sink start");
+	//printk(KERN_INFO "tmc_enable_etf_sink start");
     CS_UNLOCK(base);
     tmc_wait_for_tmcready(base);
     iowrite32(TMC_MODE_CIRCULAR_BUFFER, base + TMC_MODE);
@@ -13,18 +13,28 @@ void tmc_enable_etf_sink(void *base, struct etf_config con)
     iowrite32(con.trigger_cntr, base + TMC_TRG);
     tmc_enable(base);
     CS_LOCK(base);
-	printk(KERN_INFO "tmc_enable_etf_sink finish");
+	//printk(KERN_INFO "tmc_enable_etf_sink finish");
 }
 
 
 void tmc_disable_etf_sink(void *base)
 {
     CS_UNLOCK(base);
+	printk(KERN_INFO "disable etf.");
     tmc_flush_and_stop(base);
+	printk(KERN_INFO "flush and stop.");
 
 	tmc_dump_etf_sink(base);
+	printk(KERN_INFO "dump sink");
 
     tmc_disable(base);
+    CS_LOCK(base);
+}
+
+void tmc_continue_etf_sink(void *base)
+{
+	CS_UNLOCK(base);
+    tmc_enable(base);
     CS_LOCK(base);
 }
 
@@ -59,35 +69,27 @@ void tmc_disable_etf_link(void *base)
 
 void tmc_dump_etf_sink(void *base)
 {
-	struct file* fp;
-    mm_segment_t fs;
-    loff_t pos;
 	uint32_t result;
+	unsigned long flags;
 	char* c = (char*)(&result);
-
-	fp = filp_open("/dev/cs_device", O_RDWR, 0644);
-	fs = get_fs();
-    set_fs(KERNEL_DS);	// allow write using kernel memory
+	int data_count = 0;
 
 	result = ioread32(base + TMC_RRD);		// RRD一次读取32位
-	pos = 0;
-
+    spin_lock_irqsave(&tbc_lock, flags);
     while(result != 0xffffffff)
     {
 		// write to /dev/cs_device
-
-		vfs_write(fp, c, 4, &pos);
+		iowrite32(result, write_point);
+		write_point += 4;
         result = ioread32(base + TMC_RRD);
-		//printk(KERN_INFO "result:%x",result);
+		data_count++;
     }
+	iowrite32(result, write_point);
+	write_point += 4;
+	data_count++;
+	spin_unlock_irqrestore(&tbc_lock, flags);
 
-	vfs_write(fp, c, 4, &pos);
-
-	// restore
-	filp_close(fp, NULL);
-    set_fs(fs);
-
-	printk(KERN_INFO "etr dump finish");
+	printk(KERN_INFO "etr dump finish, %d bytes data is read.", data_count * 4);
 }
 
 void tmc_info_etf(void* base)

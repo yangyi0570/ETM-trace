@@ -1,6 +1,7 @@
 #ifndef __REGISTER_H
 #define __REGISTER_H
 
+//#define JUNOR2 1
 /**
  * @brief refer to device tree and technical manual.
  * 

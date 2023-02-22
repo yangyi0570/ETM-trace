@@ -59,12 +59,13 @@ void etm_accept_pmu_events(void *base)
     //0x14 事件对应于cycle
     //17号事件为分支预测 17+4=21对应于实际写入etm中的事件号
     //16号事件为周期 16+4=20
-    iowrite32(0x00001415, base + TRCEXTINSELR);
+    iowrite32(0x00000013, base + TRCEXTINSELR);
     //trcrsctlr2 = ioread32(base + TRCRSCTLRn(2));
     //iowrite32(trcrsctlr2 & 0xffff0000, base + TRCRSCTLRn(2)); //将SELECT域置为0
     iowrite32(0x1, base + TRCRSCTLRn(2));   //将group设为0，select设为0号外部事件
-    iowrite32(0x2, base + TRCRSCTLRn(4));   //将group设为0，select设为1号外部事件
-    iowrite32(0x00000402, base + TRCEVENTCTL0R);   //将2号资源作为事件0，将4号资源作为事件1
+    //iowrite32(0x2, base + TRCRSCTLRn(4));   //将group设为0，select设为1号外部事件
+    //iowrite32(0x00000402, base + TRCEVENTCTL0R);   //将2号资源作为事件0，将4号资源作为事件1
+    iowrite32(0x00000002, base + TRCEVENTCTL0R);
     //trceventctl1r = ioread32(base + TRCEVENTCTL1R);
     iowrite32(0x00000003, base + TRCEVENTCTL1R);    //允许事件0和事件1产生追踪元素
 }
@@ -82,7 +83,7 @@ void etm_enable_trace_program_flow(void *base)
     disable_unit(base);
     
     //etm_status_show(base);
-    iowrite32(ETM_MODE_DEFAULT, base + TRCCONFIGR);
+    iowrite32(ETM_MODE_DEFAULT | ETM_MODE_BB | ETM_MODE_CTXID, base + TRCCONFIGR);
     iowrite32(0x0, base + TRCSTALLCTLR);
     iowrite32(0xC, base + TRCSYNCPR);
     iowrite32(0x6, base + TRCTRACEIDR); //trace id
@@ -100,10 +101,10 @@ void etm_enable_trace_program_flow(void *base)
 
     //在etm单元使能前需要保证pmu已经使能完成
     enable_unit(base);
-    etm_status_show(base);
+    //etm_status_show(base);
     lock_OS(base);
     CS_LOCK(base);
-    printk(KERN_INFO "etm_enable_trace_program_flow finish");
+    //printk(KERN_INFO "etm_enable_trace_program_flow finish");
 }
 
 /**
@@ -150,6 +151,18 @@ void etm_disable(void *base)
     unlock_OS(base);
 
     disable_unit(base);
+
+    lock_OS(base);
+    CS_LOCK(base);
+}
+
+void etm_continue(void *base){
+    CS_UNLOCK(base);
+    unlock_OS(base);
+
+    enable_unit(base);
+    printk(KERN_INFO "etm_continue is called by continue_junor2_trace.");
+    //etm_status_show(base);
 
     lock_OS(base);
     CS_LOCK(base);

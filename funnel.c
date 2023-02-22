@@ -19,9 +19,9 @@ void funnel_enable(void *base, struct funnel_config con)
 	functl &= ~FUNNEL_HOLDTIME_MASK;
 	functl |= FUNNEL_HOLDTIME;  // 把holdtime写死为0x7
 	functl |= (1 << con.port);
-    printk(KERN_INFO "functl:%x",functl);
+    //printk(KERN_INFO "functl:%x",functl);
     functl &= (0xFFFFFF00 + (0xFF & (1 << con.port)));
-    printk(KERN_INFO "functl:%x",functl);
+    //printk(KERN_INFO "functl:%x",functl);
     
 	iowrite32(functl, base + FUNNEL_FUNCTL);
 	iowrite32(con.priority, base + FUNNEL_PRICTL);

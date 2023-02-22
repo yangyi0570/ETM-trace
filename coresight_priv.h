@@ -4,6 +4,10 @@
 #include "register.h"
 #include <linux/kernel.h>
 #include <asm/io.h>
+#include <linux/spinlock.h>
+
+extern spinlock_t tbc_lock;
+extern void __iomem* write_point;
 
 
 /*--------------------------- DEBUG REGISTERS ------------------------*/

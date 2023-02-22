@@ -37,6 +37,9 @@ struct connect_param{
 
 void enable_junor2_trace(void* debug);
 void disable_junor2_trace(void* debug);
+void pause_junor2_trace(void* debug);
+void continue_junor2_trace(void* debug);
+//void dump_junor2_trace(void* debug);
 #endif
 
 #ifdef HIKEY970

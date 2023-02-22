@@ -16,7 +16,7 @@ all:
 	make -C $(KDIR) M=$(PWD) CC=$(CC) ARCH=arm64 modules	
 # for hikey 970
 #   make -C $(KDIR) M=$(PWD) modules
-	rm -f *.o *.mod.c Module.symvers modules.order 
+	rm -f *.o *.mod.c modules.order 
 	find ./ -name "*.cmd" | xargs rm -f
 
 clean:

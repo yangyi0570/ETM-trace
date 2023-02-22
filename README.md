@@ -2,12 +2,13 @@
 本项目模块利用coresight中的etm组件对处理器核进行跟踪，在用户空间通过虚拟字符设备将跟踪数据读出。
 
 ## 项目组成
-1. 使能coresight的内核模块。
-2. 挂载虚拟字符设备cs_device的内核模块。（mount_cs_device目录下）
+1. 使能coresight并挂载cs_trace_buffer字符设备的内核模块。
+2. ~~挂载虚拟字符设备cs_device的内核模块。（mount_cs_device目录下）~~
+3. 挂载的PMI（performance moniter interrupt）中断处理函数。
 
 ## 当前进度
 1. 实现coresight组件链的使能。juno r2的组件链为etm->funnel->etf。
-2. 实现了读出跟踪数据：挂载虚拟字符设备，由本模块从etf中读取数据并写入到虚拟字符设备中，再从用户空间读字符设备获取跟踪数据。
+2. 持续化跟踪：PMI中断处理程序中将etf跟踪数据读出，并写入到虚拟字符设备中。
 3. PMU可以输出到跟踪流中。并简单验证了其正确性。
 
 ## 实现细节
@@ -22,12 +23,19 @@
     - TRCRSCTLRn寄存器用于选择资源。这里资源的定义是广泛的，可以是地址过滤器也可以是计数器等。这里选择外部事件。因为在TRCEXTINSELR中已经写入了想要跟踪的PMU事件的外部事件号。由TRCRSCTLRn选中外部事件号，作为被跟踪的资源。
     - TRCEVENTCTL0R选中TRCRSCTLRn来选择不同的资源，作为输出的对象。
     - TRCEVENTCTL1R通过置位使得对应的资源能够输出跟踪元素。
+### 持续化跟踪
+由于ETF的大小有限，所以需要定期将跟踪数据取出。本研究利用了PMI可以周期性产生的特性。在PMI中断函数中设置PMCCNTR寄存器（周期寄存器），当其达到最大值时会有溢出中断。通过设置PMCCNTR不同的初始值，可以控制其周期性中断的速度。  
+在ETM配置的内核模块中，导出cs_trace_continue和cs_trace_pause函数，使其在内核空间可见。PMI中断处理函数里，调用这两个函数来完成ETM跟踪的暂停以及跟踪数据读出，并写入到cs_trace_buffer字符设备中。  
+除此之外，为了保证中断不会打断用户态读取cs_trace_buffer。为跟踪数据的读写加了自旋锁。
+### cs_trace_buffer
+该虚拟字符设备对外仅提供读接口。因为创建虚拟字符设备的过程与ETM配置的内核模块在一起，因此虚拟字符设备背后开辟的内存空间地址对ETM配置是可见的。可以直接向地址写入跟踪数据。只需要在读和写之间加自旋锁保证该过程同步。
 ### ETB
 对于juno r2而言，通过tmc_info_etf函数可以查到其size为64KB。
 ### funnel
 对于funnel的配置需要注意的是，由于funnel前序有数据流入，所以这里需要指定哪几个上游端口打开。
 ### 过滤
 由于本项目是针对EL0级侧信道攻击的防御，所以可以通过设置内存地址范围过滤或者异常等级过滤来减少数据量的产生。
+
 
 ## TODO
 - 挂载虚拟字符设备的模块，其开辟的内存空间过小，考虑修改为vmalloc，而不是现有的kmalloc。
@@ -41,6 +49,7 @@
 1. 在etmtrace 0.1版本中出现的PMU与执行流跟踪的问题，在etmtrace0.2中解决。
 
 ## 使用方式
+### etmtrace 0.3版本及以前
 1. 安装mount_cs_device模块（在mount_cs_device文件夹中，安装后可以多次使用，不用每次追踪都安装再卸载）
     > sudo insmod mount_cs_device.ko
 2. 安装demo.ko模块（使能etm对CPU的指令流追踪）
@@ -51,6 +60,16 @@
         > sudo dd if=/dev/cs_device of=output_file
 5. 使用ptm2human进行解码
     > ptm2human -e -i output_file > decoded_file
+### etmtrace 0.4版本
+1. 运行disableidle.sh脚本
+    > sudo ./disableidle.sh
+2. 使能用户态对PMU的访问（非需要
+    > sudo insmod pmu_el0_enable.ko
+3. 安装demo.ko模块（使能etm对CPU的指令流追踪）
+    > sudo insmod demo.ko
+4. 挂载新的PMI中断处理函数（暂时无法卸载，要重新搞就只能重启
+    > sudo insmod pmi_handler.ko
+
 
 ## 注意事项
 1. hikey上使用etm时，4核是不可以的，其他核还没测试，不太清楚原因。7核是没问题的。
