@@ -1,6 +1,6 @@
 # compiled file
-.tmp_versions/
-demo.ko
+trace/tmp_versions/
+trace/demo.ko
 
 # unrelated file 
 ./mount_cs_device/test_write.c
