@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
-//#include "ptm2human/ptm2human.h"
+#include "ptm2human/ptm2human.h"
 
 int main(){
     int fd = open("/dev/cs_trace_buffer", O_RDONLY);
@@ -13,7 +13,9 @@ int main(){
         int bytes_read = read(fd, buffer, 64 * 1024);      // 第三个参数为buffer最多能读的字节数
         printf("Detecter: %d bytes are read.\n", bytes_read);
         // parse trace data
-        //ptm2human(buffer, bytes_read);
+        if(bytes_read > 0){
+            ptm2human(buffer, bytes_read);
+        }
         // detect attack in parsed data
         sleep(1);
     }

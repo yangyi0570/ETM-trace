@@ -1,24 +1,12 @@
 /*
- * vim:ts=4:sw=4:expandtab
- *
  * etb_format.c: Decode ETB
- * Copyright (C) 2013  Chih-Chyuan Hwang (hwangcc@csie.nctu.edu.tw)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#include "etb_format.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "tracer.h"
+#include "stream.h"
+
 #define ETB_PACKET_SIZE 16
 #define NULL_TRACE_SOURCE 0
 
@@ -50,7 +38,7 @@ int init_stream(struct stream *stream, struct stream *parent)
     return 0;
 }
 
-int decode_etb_stream(struct stream *etb_stream)
+int decode_etb_stream(struct stream *etb_stream, struct stream *multiple_stream)
 {
     struct stream *stream;
     int ret = 0;
@@ -149,19 +137,10 @@ int decode_etb_stream(struct stream *etb_stream)
         }
     }
 
-    for (i = 0; i < nr_stream; i++) {
-        printf("There are %d bytes in the stream %d\n", stream[i].buff_len, i);
-        if (stream[i].buff_len != 0) {
-            printf("Decode trace stream of ID %d\n", i);
-            decode_stream(&(stream[i]));
-        } else {
-            printf("There is no valid data in the stream of ID %d\n", i);
-        }
-        free(stream[i].buff);
-    }
+    multiple_stream = stream;
+    return ret;
 
 exit_decode_etb_stream:
     free(stream);
-
     return ret;
 }

@@ -27,54 +27,30 @@ int ptm2human(char* trace_data, unsigned int data_size)
     long val;
     unsigned int trcidr12 = 0, trcidr13 = 0;
     //stream是一个以字符数组形式保存了跟踪数据文件内容的buffer
-    struct stream stream;
+    struct stream stream, *multiple_stream = NULL;
 
     memset(&stream, 0, sizeof(struct stream));
     pkttype = PKT_TYPE_ETMV4;
-    //tracepkts = etmv4pkts
-    //synchronization = etmv4_synchronization
     decode_etmv4(); 
 
-    if (pkttype == -1) {
-        pkttype = PKT_TYPE_PTM;
-        decode_ptm();
-    }
-
-    /* validate context ID size */
-    switch (CONTEXTID_SIZE(&(stream.tracer))) {
-    case 0:
-    case 1:
-    case 2:
-    case 4:
-        break;
-    default:
-        printf("Invalid context ID size %d\n", CONTEXTID_SIZE(&(stream.tracer)));
-        return EXIT_FAILURE;
-        break;
-    }
-
-    /* validate CONDTYPE in trcidr0 */
-    if (CONDTYPE(&(stream.tracer)) > 2) {
-        printf("Invalid CONDTYPE in TRCIDR0: %d (should be either 0 or 1)\n", CONDTYPE(&(stream.tracer)));
-        return EXIT_FAILURE;
-    }
-
-    /* validate trcidr12 and trcidr13 */
-    if (trcidr12 < trcidr13) {
-        printf("Invalid TRCIDR12/TRCIDR13: TRCIDR12 (%d) < TRCIDR13 (%d)\n", trcidr12, trcidr13);
-        return EXIT_FAILURE;
-    } else {
-        COND_KEY_MAX_INCR(&(stream.tracer)) = trcidr12 - trcidr13;
-    }
+    COND_KEY_MAX_INCR(&(stream.tracer)) = trcidr12 - trcidr13;
 
     stream.buff = trace_data;
     stream.buff_len = data_size;
 
-    ret = decode_etb_stream(&stream);
-
-    if (ret) {
-        return EXIT_FAILURE;
-    } else {
-        return EXIT_SUCCESS;
+    int nr_stream = decode_etb_stream(&stream, multiple_stream);
+    if(nr_stream == -1) return -1;
+    
+    for (int i = 0; i < nr_stream; i++) {
+        printf("There are %d bytes in the stream %d\n", multiple_stream[i].buff_len, i);
+        if (multiple_stream[i].buff_len != 0) {
+            printf("Decode trace stream of ID %d\n", i);
+            decode_stream(&(multiple_stream[i]));
+        } else {
+            printf("There is no valid data in the stream of ID %d\n", i);
+        }
+        free(multiple_stream[i].buff);
     }
+
+    return 0;
 }
