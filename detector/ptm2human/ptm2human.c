@@ -40,17 +40,22 @@ int ptm2human(char* trace_data, unsigned int data_size)
 
     int nr_stream = decode_etb_stream(&stream, multiple_stream);
     if(nr_stream == -1) return -1;
+    printf("decode_etb_stream finished.\n");
     
     for (int i = 0; i < nr_stream; i++) {
-        printf("There are %d bytes in the stream %d\n", multiple_stream[i].buff_len, i);
-        if (multiple_stream[i].buff_len != 0) {
-            printf("Decode trace stream of ID %d\n", i);
-            decode_stream(&(multiple_stream[i]));
-        } else {
-            printf("There is no valid data in the stream of ID %d\n", i);
-        }
+        // printf("There are %d bytes in the stream %d\n", multiple_stream[i].buff_len, i);
+        // if (multiple_stream[i].buff_len != 0) {
+        //     printf("Decode trace stream of ID %d\n", i);
+        //     decode_stream(&(multiple_stream[i]));
+        // } else {
+        //     printf("There is no valid data in the stream of ID %d\n", i);
+        // }
         free(multiple_stream[i].buff);
     }
+    free(multiple_stream);
+    printf("decode_stream finished.\n");
+
+    free(stream.buff);
 
     return 0;
 }

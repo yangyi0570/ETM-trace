@@ -51,11 +51,13 @@ static ssize_t cs_read(struct file *filp, char __user *buf, size_t len, loff_t *
     while(read_point != write_point){
         val = ioread32(read_point);
         if(copy_to_user(buf, &val, sizeof(val))){
+            printk(KERN_INFO "copy to user failed.");
             spin_unlock(&tbc_lock);
             return -EFAULT;
         }
         read_point += 4;
         bytes_read += 4;
+        buf += 4;
     }
     write_point = paddr;
     memset(paddr, 0, device_buffer_size);
