@@ -38,6 +38,7 @@ int ptm2human(char* trace_data, unsigned int data_size)
     stream.buff = trace_data;
     stream.buff_len = data_size;
 
+    // 如果跟踪数据最后结尾的0xffffffff，并且在一个stream里传入多段，应该在传入时把多次跟踪截断。
     int nr_stream = decode_etb_stream(&stream, multiple_stream);
     if(nr_stream == -1) return -1;
     printf("decode_etb_stream finished.\n");

@@ -12,7 +12,6 @@ struct etf_config
 
 void tmc_enable_etf_sink(void *base, struct etf_config con);
 void tmc_disable_etf_sink(void *base);
-void tmc_continue_etf_sink(void *base);
 void tmc_enable_etf_link(void *base);
 void tmc_disable_etf_link(void *base);
 void tmc_dump_etf_sink(void *base);

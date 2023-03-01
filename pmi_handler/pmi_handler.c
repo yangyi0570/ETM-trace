@@ -28,10 +28,6 @@ extern int cs_trace_continue(void);
 
 irqreturn_t pmu_irq_handler(int irq, void* dev_id)
 {
-    // FIRST, disable ETM & ETB
-    // SECOND, retrieve trace
-
-    // THIRD, enable ETB & ETM
     cs_trace_pause();
     cs_trace_continue();
     

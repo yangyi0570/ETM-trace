@@ -20,21 +20,9 @@ void tmc_enable_etf_sink(void *base, struct etf_config con)
 void tmc_disable_etf_sink(void *base)
 {
     CS_UNLOCK(base);
-	printk(KERN_INFO "disable etf.");
     tmc_flush_and_stop(base);
-	printk(KERN_INFO "flush and stop.");
-
 	tmc_dump_etf_sink(base);
-	printk(KERN_INFO "dump sink");
-
     tmc_disable(base);
-    CS_LOCK(base);
-}
-
-void tmc_continue_etf_sink(void *base)
-{
-	CS_UNLOCK(base);
-    tmc_enable(base);
     CS_LOCK(base);
 }
 
@@ -81,12 +69,14 @@ void tmc_dump_etf_sink(void *base)
 		// write to /dev/cs_device
 		iowrite32(result, write_point);
 		write_point += 4;
+		printk(KERN_INFO "result:0x%x", result);
         result = ioread32(base + TMC_RRD);
 		data_count++;
     }
-	iowrite32(result, write_point);
-	write_point += 4;
-	data_count++;
+	// 将0xffffffff写入
+	// iowrite32(result, write_point);
+	// write_point += 4;
+	// data_count++;
 	spin_unlock_irqrestore(&tbc_lock, flags);
 
 	printk(KERN_INFO "etr dump finish, %d bytes data is read.", data_count * 4);

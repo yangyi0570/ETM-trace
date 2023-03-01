@@ -88,20 +88,32 @@ void etm_enable_trace_program_flow(void *base)
     iowrite32(0xC, base + TRCSYNCPR);
     iowrite32(0x6, base + TRCTRACEIDR); //trace id
     iowrite32(0x0, base + TRCTSCTLR);
-    iowrite32(ETM_VI_DEFAULT | ETM_EXLEVEL_S_EL0 |
-            ETM_EXLEVEL_S_EL1 | ETM_EXLEVEL_S_EL2 |
-            ETM_EXLEVEL_S_EL3 | ETM_EXLEVEL_NS_EL1 |
-            ETM_EXLEVEL_NS_EL2, base + TRCVICTLR); // only trace non-secure EL0
+    // iowrite32(ETM_VI_DEFAULT | ETM_EXLEVEL_S_EL0 |
+    //         ETM_EXLEVEL_S_EL1 | ETM_EXLEVEL_S_EL2 |
+    //         ETM_EXLEVEL_S_EL3 | ETM_EXLEVEL_NS_EL1 |
+    //         ETM_EXLEVEL_NS_EL2, base + TRCVICTLR); // only trace non-secure EL0
+    iowrite32(0x201, base + TRCVICTLR);
     iowrite32(0x0, base + TRCVIIECTLR);    // no address filtering
     iowrite32(0x0, base + TRCVISSCTLR);
-    iowrite32(0x0, base + TRCBBCTLR);
+    //iowrite32(0x0, base + TRCBBCTLR);
+
+    // iowrite32(0x18C1, base + TRCCONFIGR);
+    // iowrite32(0x0, base + TRCSTALLCTLR);
+    // iowrite32(0xC, base + TRCSYNCPR);
+    // iowrite32(0x6, base + TRCTRACEIDR); //trace id
+    // iowrite32(0x0, base + TRCTSCTLR);
+    // iowrite32(0x201, base + TRCVICTLR); // only trace non-secure EL0
+    // iowrite32(0x0, base + TRCVIIECTLR);    // no address filtering
+    // iowrite32(0x0, base + TRCVISSCTLR);
+    // iowrite32(0x0, base + TRCBBCTLR);
 
     //pmu使能相关
-    //etm_accept_pmu_events(base);
+    etm_accept_pmu_events(base);
+    //etm_status_show(base);
 
     //在etm单元使能前需要保证pmu已经使能完成
     enable_unit(base);
-    //etm_status_show(base);
+    etm_status_show(base);
     lock_OS(base);
     CS_LOCK(base);
     //printk(KERN_INFO "etm_enable_trace_program_flow finish");
@@ -160,9 +172,9 @@ void etm_continue(void *base){
     CS_UNLOCK(base);
     unlock_OS(base);
 
-    enable_unit(base);
-    printk(KERN_INFO "etm_continue is called by continue_junor2_trace.");
     //etm_status_show(base);
+    enable_unit(base);
+    
 
     lock_OS(base);
     CS_LOCK(base);
@@ -198,6 +210,10 @@ void etm_status_show(void *base)
     printk(KERN_INFO "TRCBBCTLR->0x%x", ioread32(base + TRCBBCTLR));
     printk(KERN_INFO "TRCTRACEIDR->0x%x", ioread32(base + TRCTRACEIDR));
     printk(KERN_INFO "TRCQCTLR->0x%x", ioread32(base + TRCQCTLR));
+    printk(KERN_INFO "TRCEXTINSELR->0x%x", ioread32(base + TRCEXTINSELR));
+    printk(KERN_INFO "TRCRSCTLRn2->0x%x", ioread32(base + TRCRSCTLRn(2)));
+    printk(KERN_INFO "TRCEVENTCTL0R->0x%x", ioread32(base + TRCEVENTCTL0R));
+    printk(KERN_INFO "TRCEVENTCTL1R->0x%x", ioread32(base + TRCEVENTCTL1R));
 
     printk(KERN_INFO "TRCVICTLR->0x%x", ioread32(base + TRCVICTLR));
     printk(KERN_INFO "TRCVIIECTLR->0x%x", ioread32(base + TRCVIIECTLR));

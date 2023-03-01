@@ -20,21 +20,12 @@ void enable_junor2_trace(void* debug)
 void disable_junor2_trace(void* debug)
 {
     struct connect_param *param = (struct connect_param *)debug;
-
     etm_disable(param->etm1_register);
     funnel_disable(param->cluster0_funnel_register);
     funnel_disable(param->main_funnel_register);
     tmc_disable_etf_sink(param->etf0_register);
 
     printk(KERN_INFO "disable trace and reset!");
-}
-
-void pause_junor2_trace(void* debug){
-    struct connect_param *param = (struct connect_param *)debug;
-    etm_disable(param->etm1_register);
-    funnel_disable(param->cluster0_funnel_register);
-    funnel_disable(param->main_funnel_register);
-    tmc_disable_etf_sink(param->etf0_register);
 }
 
 void continue_junor2_trace(void* debug){
@@ -45,12 +36,9 @@ void continue_junor2_trace(void* debug){
     tmc_enable_etf_sink(param->etf0_register, etf_con);
     funnel_enable(param->main_funnel_register, main_funnel_con);
     funnel_enable(param->cluster0_funnel_register, cluster0_funnel_con);
+    //etm_enable_trace_program_flow(param->etm1_register);
     etm_continue(param->etm1_register);
 }
-
-// void dump_junor2_trace(void* debug){
-//     //todo
-// }
 
 #endif
 

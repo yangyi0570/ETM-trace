@@ -115,7 +115,7 @@ EXPORT_SYMBOL_GPL(cs_trace_continue);
 
 int cs_trace_pause(void){
     printk(KERN_INFO "cs_trace_pause is called.");
-    pause_junor2_trace(cparam);
+    disable_junor2_trace(cparam);
     return 0;
 }
 EXPORT_SYMBOL_GPL(cs_trace_pause);

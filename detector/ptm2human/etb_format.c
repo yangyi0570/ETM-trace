@@ -71,7 +71,7 @@ int decode_etb_stream(struct stream *etb_stream, struct stream *multiple_stream)
         end = etb_stream->buff[pkt_idx + ETB_PACKET_SIZE - 1];  //end指向当前处理的包的最后一个字节
         for (byte_idx = 0; byte_idx < (ETB_PACKET_SIZE - 1); byte_idx++) {  //包内字节遍历
             c = etb_stream->buff[pkt_idx + byte_idx];   //c为当前指向的byte
-            if (byte_idx & 1) { //包内的奇数个byte
+            if (byte_idx & 1) { //包内的奇数个byte，对应于data，判断前一个字节的原因在于要确定该字节的data属于哪个id。
                 /* data byte */
                 tmp = etb_stream->buff[pkt_idx + byte_idx - 1];
                 if ((tmp & 1) &&    /* previous byte is an ID byte */   \
